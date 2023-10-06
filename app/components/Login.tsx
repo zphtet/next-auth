@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { signIn } from "next-auth/react";
-const SignUp = () => {
+const Login = () => {
   const initialState = {
     name: "",
     email: "",
@@ -22,18 +22,13 @@ const SignUp = () => {
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(formData);
 
-    const res = await fetch(`/api/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
+    console.log("From Login", formData);
+    await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      callbackUrl: "/me",
     });
-    const data = await res.json();
-    if (data.status === "success") alert("success signin");
-    console.log(data);
   };
 
   return (
@@ -73,9 +68,9 @@ const SignUp = () => {
         value={formData.confirmpassword}
         onChange={onChangeHandler}
       />
-      <button className="btn btn-primary btn-sm"> SignUp With Email</button>
+      <button className="btn btn-primary btn-sm"> Login With Email</button>
     </form>
   );
 };
 
-export default SignUp;
+export default Login;

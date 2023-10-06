@@ -5,6 +5,8 @@ import clientPromise from "@/lib/mongoPromise";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import connectDB from "./connectDB";
+import userModel from "@/model/user.model";
 const authOption: NextAuthOptions = {
   pages: {
     signIn: "/",
@@ -35,7 +37,7 @@ const authOption: NextAuthOptions = {
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Eamil", type: "email", placeholder: "zph@gmail.com" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
@@ -46,10 +48,19 @@ const authOption: NextAuthOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         const cred = {
-          username: credentials?.username,
+          email: credentials?.email,
           password: credentials?.password,
         };
         console.log("my credentials", credentials);
+        console.log(cred);
+        await connectDB();
+
+        const resp = await userModel.findOne({ ...cred });
+
+        if (resp) {
+          return resp;
+        }
+        return null;
         // const res = await fetch("/api/auth/signup", {
         //   method: "POST",
         //   body: JSON.stringify(cred),
@@ -64,8 +75,8 @@ const authOption: NextAuthOptions = {
         // }
         // // Return null if user data could not be retrieved
         // return null;
-        console.log("successfully logined");
-        return "success";
+        // console.log("successfully logined");
+        // return "success";
       },
     }),
   ],

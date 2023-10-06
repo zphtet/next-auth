@@ -2,11 +2,12 @@ import React from "react";
 import { getServerSession } from "next-auth";
 import authOption from "@/lib/authOptions";
 import LogoutButton from "../components/LogoutButton";
-import Image from "next/image";
 
 const page = async () => {
   const session = await getServerSession(authOption);
   // if (!session) return redirect("/");
+  console.log("from me", session);
+
   return (
     <div className="w-screen h-screen grid place-items-center">
       <div className="flex flex-col items-center gap-2 p-5">
