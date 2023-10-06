@@ -7,6 +7,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "./connectDB";
 import userModel from "@/model/user.model";
+const bcrypt = require("bcrypt");
 const authOption: NextAuthOptions = {
   pages: {
     signIn: "/",
@@ -49,7 +50,7 @@ const authOption: NextAuthOptions = {
         // (i.e., the request IP address)
         const cred = {
           email: credentials?.email,
-          password: credentials?.password,
+          // password: credentials?.password,
         };
         console.log("my credentials", credentials);
         console.log(cred);
@@ -58,25 +59,16 @@ const authOption: NextAuthOptions = {
         const resp = await userModel.findOne({ ...cred });
 
         if (resp) {
+          const isPassEqual = await bcrypt.compare(
+            credentials?.password,
+            resp.password
+          );
+          if (!isPassEqual) {
+            return null;
+          }
           return resp;
         }
         return null;
-        // const res = await fetch("/api/auth/signup", {
-        //   method: "POST",
-        //   body: JSON.stringify(cred),
-        //   headers: { "Content-Type": "application/json" },
-        // });
-        // const user = await res.json();
-
-        // console.log("user: " + user);
-        // // If no error and we have user data, return it
-        // if (res.ok && user) {
-        //   return user;
-        // }
-        // // Return null if user data could not be retrieved
-        // return null;
-        // console.log("successfully logined");
-        // return "success";
       },
     }),
   ],
