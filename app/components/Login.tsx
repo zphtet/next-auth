@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 const Login = () => {
   const initialState = {
     email: "",
@@ -21,12 +22,17 @@ const Login = () => {
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
 
-    console.log("From Login", formData);
-    await signIn("credentials", {
+    // console.log("From signin", formData);
+    const data = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
       callbackUrl: "/me",
+      redirect: false,
     });
+    console.log("from signin", data);
+    if (data!.status === 401) {
+      toast.error("User Not Exist");
+    }
   };
 
   return (

@@ -14,4 +14,7 @@ declare module "next-auth" {
       name: string;
     };
   }
+  interface Error extends Error {
+    code: number;
+  }
 }

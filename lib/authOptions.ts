@@ -48,21 +48,23 @@ const authOption: NextAuthOptions = {
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
+        await connectDB();
         const cred = {
           email: credentials?.email,
           // password: credentials?.password,
         };
         console.log("my credentials", credentials);
         console.log(cred);
-        await connectDB();
 
         const resp = await userModel.findOne({ ...cred });
+        console.log("from db", resp);
 
         if (resp) {
           const isPassEqual = await bcrypt.compare(
             credentials?.password,
             resp.password
           );
+          console.log("isPassEqual", isPassEqual);
           if (!isPassEqual) {
             return null;
           }

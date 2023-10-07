@@ -16,11 +16,24 @@ export async function POST(req: NextRequest) {
     email: data.email,
     password: cryptedPass,
   };
-  const res = await userModel.create(userObj);
-  return NextResponse.json({
-    status: "success",
-    data: {
-      user: res,
-    },
-  });
+
+  try {
+    const res = await userModel.create(userObj);
+    return NextResponse.json({
+      status: "success",
+      data: {
+        user: res,
+      },
+    });
+  } catch (err) {
+    const msg =
+      (err as any).code === 11000
+        ? "Email Already Registered"
+        : (err as any).message;
+    return NextResponse.json({
+      status: "fail",
+      message: msg,
+      statusCode: (err as any).code,
+    });
+  }
 }
