@@ -34,9 +34,7 @@ export const VerifyEmail = ({
               pY={11}
               pX={23}
               className="px-4 py-2 text-white  bg-blue-600"
-              href={`${baseUrl || "http://localhost:3000"}/verify/${
-                token || "token"
-              }`}
+              href={`${baseUrl}/verify/${token || "token"}`}
             >
               Verify
             </Button>
