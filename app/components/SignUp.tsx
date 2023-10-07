@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 
@@ -14,6 +14,7 @@ const SignUp = ({ toLogin }: SignUpProps) => {
   };
 
   const [formData, setFormData] = React.useState(initialState);
+  const [loading, setLoading] = useState(false);
 
   const onChangeHandler = (e: ChangeEvent) => {
     const target = e.target as HTMLInputElement;
@@ -27,7 +28,7 @@ const SignUp = ({ toLogin }: SignUpProps) => {
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    setLoading(true);
 
     const res = await fetch(`/api/signup`, {
       method: "POST",
@@ -38,10 +39,17 @@ const SignUp = ({ toLogin }: SignUpProps) => {
     });
     const data = await res.json();
     if (data.status === "success") {
-      toast.success("SignUp Successful , Signin Again");
+      await fetch(`/api/sendemail`, {
+        method: "POST",
+      });
+      setLoading(false);
+
+      toast.success("Signup success ! VerifyEmail");
       toLogin(true);
+
       return;
     }
+    setLoading(false);
     toast.error(data.message);
   };
 
@@ -84,7 +92,10 @@ const SignUp = ({ toLogin }: SignUpProps) => {
           value={formData.confirmpassword}
           onChange={onChangeHandler}
         />
-        <button className="btn btn-primary btn-sm"> SignUp With Email</button>
+        <button className="btn btn-primary btn-sm" disabled={loading}>
+          {" "}
+          {loading ? "loading ..." : "Sign Up With Email"}
+        </button>
       </form>
     </>
   );

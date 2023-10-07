@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 const Login = () => {
@@ -8,6 +8,7 @@ const Login = () => {
   };
 
   const [formData, setFormData] = React.useState(initialState);
+  const [loading, setLoading] = useState(false);
 
   const onChangeHandler = (e: ChangeEvent) => {
     const target = e.target as HTMLInputElement;
@@ -22,14 +23,14 @@ const Login = () => {
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
 
-    // console.log("From signin", formData);
+    setLoading(true);
     const data = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
       callbackUrl: "/me",
       redirect: false,
     });
-    console.log("from signin", data);
+    setLoading(false);
     if (data!.status === 401) {
       toast.error("User Not Exist");
     }
@@ -57,7 +58,9 @@ const Login = () => {
         onChange={onChangeHandler}
       />
 
-      <button className="btn btn-primary btn-sm"> Login With Email</button>
+      <button className="btn btn-primary btn-sm" disabled={loading}>
+        {loading ? "Loading..." : "Login With Email"}
+      </button>
     </form>
   );
 };

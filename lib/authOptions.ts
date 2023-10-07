@@ -42,29 +42,18 @@ const authOption: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-        // You can also use the `req` object to obtain additional parameters
-        // (i.e., the request IP address)
         await connectDB();
         const cred = {
           email: credentials?.email,
           // password: credentials?.password,
         };
-        console.log("my credentials", credentials);
-        console.log(cred);
 
         const resp = await userModel.findOne({ ...cred });
-        console.log("from db", resp);
-
         if (resp) {
           const isPassEqual = await bcrypt.compare(
             credentials?.password,
             resp.password
           );
-          console.log("isPassEqual", isPassEqual);
           if (!isPassEqual) {
             return null;
           }
